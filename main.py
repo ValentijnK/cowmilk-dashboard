@@ -66,7 +66,6 @@ with country_col:
 filtered_year = df[(df['year'] >= pd.to_datetime(filter_start))
                              & (df['year'] <= pd.to_datetime(filter_end))]
 
-
 filtered_data = filtered_year[filtered_year['country'].isin(country)]
 # Container 2: Metrics
 if len(country) > 1:
