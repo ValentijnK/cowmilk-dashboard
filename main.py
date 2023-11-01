@@ -1,4 +1,6 @@
 import pandas as pd
+import plotly.express as px
+import country_converter as coco
 
 milk_production = pd.read_csv('production_milk_EU.csv')
 cows = pd.read_csv('number_of_dairy_cows.csv')
@@ -19,3 +21,20 @@ print("Duplicates in cows:", cows.duplicated().sum())
 # Merge the two dataframes
 df = pd.merge(milk_production, cows, on=['country', 'year'])
 df.head(20)
+
+# filtering for maps
+df['country'] = df['country'].replace('EL', 'GR') # Greece
+country = coco.convert(names=df['country'], to="ISO3")
+df['country_ISO3'] = country
+mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3']).size().reset_index()
+mapdf = mapdf[mapdf['country_ISO3'] != 'not found'] # remove not found (total eu values)
+
+# MELK PRODUCTIE
+fig = px.choropleth(locations=mapdf['country_ISO3'], color=mapdf['milk_production'], scope='europe',
+                    color_continuous_scale='RdYlGn', title='Milk production in Europe')
+fig
+
+# AANTAL KOE
+fig = px.choropleth(locations=mapdf['country_ISO3'], color=mapdf['cows'], scope='europe',
+                    color_continuous_scale='RdYlGn', title='Koe in Europa')
+fig
