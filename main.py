@@ -188,3 +188,91 @@ folium.Choropleth(
 ).add_to(map)
 map
 
+
+
+
+
+#vanaf hier de plot
+milk_cow = filtered_data.groupby('year')[('cows','milk_production')].mean().reset_index()
+
+fig = go.Figure()
+fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['cows'], name='Aantal koe (x 1000)', opacity=0.75))
+fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['milk_production'], name='Aantal liter melk', opacity=0.75))
+
+fig.update_layout(
+    title_text='Aantal liter melk en koeien in EU (2012-2022)', 
+    xaxis_title_text='Jaar',
+    yaxis_title_text='Aantal', 
+    showlegend=True
+)
+
+st.plotly_chart(fig)
+
+
+
+#boxplot
+
+fig = go.Figure()
+fig.add_trace(go.Box(x=filtered_data['year'], y=filtered_year['cows'], name='Cows', boxmean=True))
+fig.update_layout(
+    title='Boxplot voor aantal koeien per jaar')
+
+st.plotly_chart(fig)
+
+
+
+fig = go.Figure()
+fig.add_trace(go.Box(x=filtered_data['year'], y=filtered_year['milk_production'], name='Milk Production', boxmean=True))
+fig.update_layout(
+    title='Boxplot voor aantal geproduceerd melk per jaar')
+
+st.plotly_chart(fig)
+
+
+
+
+#scatterplot
+#slider toevoegen om aantal koe te selecteren?
+#nog een lineplot maken?
+milk_cow_country = filtered_data.groupby('country')[('cows','milk_production')].mean().reset_index()
+fig = px.scatter(milk_cow_country, x='cows', y = 'milk_production', color = 'country')
+
+# fig.add_trace(go.Scatter(x=milk_cow['cows'], y=milk_cow['milk_production'], 
+#                          mode='lines+markers',
+#                          name='Gemiddele melk en koe per jaar'))
+
+fig.update_layout(
+    title_text='Aantal liter melk geproduceerd bij aantal koeien per land (2012-2022)', 
+    xaxis_title_text='Aantal koeien', 
+    yaxis_title_text='Aantal liter melk geproduceerd'
+)
+st.plotly_chart(fig)
+
+
+#lineplot
+jaar_selectie = st.select_slider("Kies een jaar",
+    options=filtered_data['year'].dt.year.unique())
+
+milk_cow_country_year = filtered_data[filtered_data['year'].dt.year == jaar_selectie]
+
+
+fig = px.scatter(milk_cow_country_year, x = 'cows', y="milk_production", color = 'country')
+fig.update_layout(
+    title_text='Aantal liter melk geproduceerd en aantal koeien per land per jaar (2012-2022)', 
+    xaxis_title_text='Aantal koeien', 
+    yaxis_title_text='Aantal liter melk geproduceerd'
+)
+st.plotly_chart(fig)
+
+
+
+#histogram voor Nederland
+nl = ['NL','DE','FR','BE']
+nl = filtered_data[filtered_data['country'].isin(nl)]
+fig = px.histogram(nl, x='year', y='milk_production', nbins = 15, barmode = 'overlay', color = 'country')
+fig.update_layout(
+    title_text='Aantal liter melk geproduceerd in/naast Nederland (2012 - 2022)', 
+    xaxis_title_text='Jaar', 
+    yaxis_title_text='Aantal liter melk geproduceerd'
+)
+st.plotly_chart(fig)
