@@ -37,7 +37,7 @@ df['country'] = df['country'].replace('EL', 'GR')
 # Drop outlier
 df.drop(df[df['country'] == 'EU27_2020'].index, inplace=True)
 # Feature Engineering
-df['milk_per_cow'] = ((df['milk_production'] * 1000) / (df['cows'] * 1000))
+df['milk_per_cow'] = ((df['milk_production'] * 1000) / (df['cows'] * 1000) * 1000)
 
 
 
@@ -93,8 +93,6 @@ with st.container():
             (country_list),
             default=['NL', 'DE']
         )
-
-
 # Subset Dataframe based on datepicker
 filtered_year = df[(df['year'] >= pd.to_datetime(filter_start))
                              & (df['year'] <= pd.to_datetime(filter_end))]
@@ -108,7 +106,7 @@ except IndexError:
 
 
 # Calculate values for metrics
-if len(country) > 1:
+if len(country) > 1 & len(country) < 2:
     country_1 = filtered_data[filtered_data['country'] == country[0]]
     country_2 = filtered_data[filtered_data['country'] == country[1]]
 
@@ -121,10 +119,6 @@ if len(country) > 1:
     milk_per_cow_c1 = round((total_milk_c1 / avg_cows_c1) * 1000, 2)
     milk_per_cow_c2 = round((total_milk_c2 / avg_cows_c2) * 1000, 2)
 
-    scoreboard = [
-        {'country': country[0], 'milk': milk_per_cow_c1},
-        {'country': country[1], 'milk': milk_per_cow_c2}
-    ]
 elif len(country) == 1:
     # Get total liters of milk produced
     total_milk = round((filtered_data['milk_production'].sum() * 1000), 2)
@@ -132,9 +126,6 @@ elif len(country) == 1:
     avg_cows = round((filtered_data['cows'].mean() * 1000), 2)
     # milk produced per cow
     milk_per_cow = round((total_milk / avg_cows) * 1000, 2)
-    scoreboard = [
-        {'country': country[0], 'milk': milk_per_cow}
-    ]
 
 
 # Get information based on country code
@@ -148,7 +139,7 @@ with info_col:
         # Europa
         '''
     else:
-        countries = coco.convert(names=(country),src='ISO2', to='name_short')
+        countries = coco.convert(names=country, src='ISO2', to='name_short')
         if isinstance(countries, list) == 0:
             f'''
                 # {countries}
@@ -171,28 +162,21 @@ with info_col:
             {info['info'].iloc[-1]}
         '''
 with rank_col:
-    winner = max(scoreboard, key=lambda x: x['milk'])
-    loser = min(scoreboard, key=lambda x: x['milk'])
-    if len(scoreboard) > 1:
-        f'''
-            ## Ranking the cows :cow2:
-            
-            ### #1 {winner['country']} - {winner['milk']:,}
-            
-            ### #2 {loser['country']} - {loser['milk']:,}
-        '''
-    else:
-        f'''
-            ## Ranking the cows :cow2:
-
-            ### #1 {winner['country']} - {winner['milk']:,}
-        '''
-
+    grouped_df = filtered_data.groupby(by='country', as_index=False)['milk_per_cow'].mean()
+    scoreboard = grouped_df.sort_values(by='milk_per_cow', ascending=False, ignore_index=True)
+    '''
+    # Ranking the cows :cow2:
+    '''
+    for i, row in scoreboard.iterrows():
+        score = i + 1  # The score increments from 1
+        c = row['country']
+        milk_per_cow = round(row['milk_per_cow'])
+        st.write(f"### #{score} {c} - {milk_per_cow} liter")
 
 st.divider()
 
 # Container 2: Metrics
-if len(country) > 1 & len(country) <1:
+if len(country) == 2:
     m1, m2, m3, m4, m5, m6 = st.columns(6)
 
     m1.metric(
@@ -281,7 +265,7 @@ with col3:
 with fig_col4:
     fig_line = px.line(filtered_data, x='year', y='milk_per_cow', color='country')
     fig_line.update_layout(
-        title_text='Melk per koe ',
+        title_text='Melk per koe',
         yaxis_title='Productie per melkkoe',
         xaxis_title='Jaar'
     )
