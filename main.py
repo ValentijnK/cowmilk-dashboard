@@ -38,5 +38,5 @@ fig
 
 # AANTAL KOE
 fig = px.choropleth(locations=filtered_mapdf['country_ISO3'], color=filtered_mapdf['cows'], scope='europe',
-                    color_continuous_scale='RdYlGn', title='Koe in Europa')
+                    color_continuous_scale='RdYlGn', title=f'Koe in Europa in {year}')
 fig
