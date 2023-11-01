@@ -33,7 +33,7 @@ filtered_mapdf = mapdf[mapdf['year'] == year]
 
 # MELK PRODUCTIE
 fig = px.choropleth(locations=filtered_mapdf['country_ISO3'], color=filtered_mapdf['milk_production'], scope='europe',
-                    color_continuous_scale='RdYlGn', title='Milk production in Europe')
+                    color_continuous_scale='RdYlGn', title=f'Milk production in Europe in {year}')
 fig
 
 # AANTAL KOE
