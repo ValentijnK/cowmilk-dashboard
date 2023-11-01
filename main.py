@@ -23,18 +23,20 @@ df = pd.merge(milk_production, cows, on=['country', 'year'])
 df.head(20)
 
 # filtering for maps
+year = 2022
 df['country'] = df['country'].replace('EL', 'GR') # Greece
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
-mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3']).size().reset_index()
+mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found'] # remove not found (total eu values)
+filtered_mapdf = mapdf[mapdf['year'] == year]
 
 # MELK PRODUCTIE
-fig = px.choropleth(locations=mapdf['country_ISO3'], color=mapdf['milk_production'], scope='europe',
+fig = px.choropleth(locations=filtered_mapdf['country_ISO3'], color=filtered_mapdf['milk_production'], scope='europe',
                     color_continuous_scale='RdYlGn', title='Milk production in Europe')
 fig
 
 # AANTAL KOE
-fig = px.choropleth(locations=mapdf['country_ISO3'], color=mapdf['cows'], scope='europe',
+fig = px.choropleth(locations=filtered_mapdf['country_ISO3'], color=filtered_mapdf['cows'], scope='europe',
                     color_continuous_scale='RdYlGn', title='Koe in Europa')
 fig
