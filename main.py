@@ -118,8 +118,9 @@ if len(country) > 1 & len(country) < 2:
     avg_cows_c1 = round((country_1['cows'].mean()), 2)
     avg_cows_c2 = round((country_2['cows'].mean()), 2)
 
-    milk_per_cow_c1 = round((total_milk_c1 / avg_cows_c1), 2)
-    milk_per_cow_c2 = round((total_milk_c2 / avg_cows_c2), 2)
+    milk_per_cow_c1 = round(filtered_data[filtered_data['country'] == country[0]]['milk_per_cow'].mean(), 2)
+    milk_per_cow_c2 = round(filtered_data[filtered_data['country'] == country[1]]['milk_per_cow'].mean(), 2)
+
 
 elif len(country) == 1:
     # Get total liters of milk produced
@@ -335,12 +336,13 @@ with fig_col7:
     st.plotly_chart(fig7)
 st.divider()
 
-
-year = pd.to_datetime('2022', format='%Y')
+# year = pd.to_datetime('2022', format='%Y')
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
 mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
+year = st.select_slider("Kies een jaar", options=mapdf['year'].dt.year.unique()[::-1], value=2022)
+year = pd.to_datetime(year, format='%Y')
 filtered_mapdf = mapdf[mapdf['year'] == year]
 
 info_map, map_milk, map_cows = st.columns(3)
@@ -372,7 +374,7 @@ with map_milk:
         fill_color='YlGn',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name=f'Milk production in Europe in {year}',
+        legend_name='Milk production in Europe',
     ).add_to(map1)
     st_data = st_folium(map1)
 
@@ -387,30 +389,9 @@ with map_cows:
         fill_color='YlGn',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name=f'Cows in {year}',
+        legend_name='Cows in Europe',
     ).add_to(map)
     st_data = st_folium(map)
-
-# #vanaf hier de plot
-milk_cow = filtered_data.groupby('year')[['cows', 'milk_production']].mean().reset_index()
-fig = go.Figure()
-fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['cows'], name='Aantal koe (x 1000)', opacity=0.75))
-fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['milk_production'], name='Aantal liter melk', opacity=0.75))
-fig.update_layout(
-    title_text='Aantal liter melk en koeien in EU (2012-2022)',
-    xaxis_title_text='Jaar',
-    yaxis_title_text='Aantal',
-    showlegend=True
-)
-st.plotly_chart(fig)
-
-# fig = px.histogram(filtered_data, x='year', y='milk_production', nbins=15, barmode='stack', color='country')
-# fig.update_layout(
-#     title_text='Aantal liter melk geproduceerd',
-#     xaxis_title_text='Jaar',
-#     yaxis_title_text='Aantal liter melk geproduceerd'
-# )
-# st.plotly_chart(fig)
 
 
 
