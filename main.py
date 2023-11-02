@@ -332,12 +332,13 @@ with fig_col7:
 
 st.divider()
 
-
-year = pd.to_datetime('2022', format='%Y')
+# year = pd.to_datetime('2022', format='%Y')
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
 mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
+year = st.select_slider("Kies een jaar", options=mapdf['year'].dt.year.unique()[::-1], value=2022)
+year = pd.to_datetime(year, format='%Y')
 filtered_mapdf = mapdf[mapdf['year'] == year]
 print(filtered_mapdf)
 
@@ -355,7 +356,7 @@ with map_milk:
         fill_color='YlGn',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name=f'Milk production in Europe in {year}',
+        legend_name='Milk production in Europe',
     ).add_to(map1)
     st_data = st_folium(map1)
 
@@ -370,7 +371,7 @@ with map_cows:
         fill_color='YlGn',
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name=f'Cows in {year}',
+        legend_name='Cows in Europe',
     ).add_to(map)
     st_data = st_folium(map)
 
