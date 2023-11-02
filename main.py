@@ -37,7 +37,9 @@ df['country'] = df['country'].replace('EL', 'GR')
 # Drop outlier
 df.drop(df[df['country'] == 'EU27_2020'].index, inplace=True)
 # Feature Engineering
-df['milk_per_cow'] = ((df['milk_production'] * 1000) / (df['cows'] * 1000) * 1000)
+df['milk_production'] = df['milk_production'] * 1000
+df['cows'] = df['cows'] * 1000
+df['milk_per_cow'] = ((df['milk_production']) / (df['cows'])) * 1000
 
 
 
@@ -110,22 +112,22 @@ if len(country) > 1 & len(country) < 2:
     country_1 = filtered_data[filtered_data['country'] == country[0]]
     country_2 = filtered_data[filtered_data['country'] == country[1]]
 
-    total_milk_c1 = round((country_1['milk_production'].sum() * 1000), 2)
-    total_milk_c2 = round((country_2['milk_production'].sum() * 1000), 2)
+    total_milk_c1 = round((country_1['milk_production'].sum()), 2)
+    total_milk_c2 = round((country_2['milk_production'].sum()), 2)
 
-    avg_cows_c1 = round((country_1['cows'].mean() * 1000), 2)
-    avg_cows_c2 = round((country_2['cows'].mean() * 1000), 2)
+    avg_cows_c1 = round((country_1['cows'].mean()), 2)
+    avg_cows_c2 = round((country_2['cows'].mean()), 2)
 
-    milk_per_cow_c1 = round((total_milk_c1 / avg_cows_c1) * 1000, 2)
-    milk_per_cow_c2 = round((total_milk_c2 / avg_cows_c2) * 1000, 2)
+    milk_per_cow_c1 = round((total_milk_c1 / avg_cows_c1), 2)
+    milk_per_cow_c2 = round((total_milk_c2 / avg_cows_c2), 2)
 
 elif len(country) == 1:
     # Get total liters of milk produced
-    total_milk = round((filtered_data['milk_production'].sum() * 1000), 2)
+    total_milk = round((filtered_data['milk_production'].sum()), 2)
     # Get average numbers of livestock
-    avg_cows = round((filtered_data['cows'].mean() * 1000), 2)
+    avg_cows = round((filtered_data['cows'].mean()), 2)
     # milk produced per cow
-    milk_per_cow = round((total_milk / avg_cows) * 1000, 2)
+    milk_per_cow = round((total_milk / avg_cows), 2)
 
 
 # Get information based on country code
@@ -340,7 +342,6 @@ df['country_ISO3'] = country
 mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
 filtered_mapdf = mapdf[mapdf['year'] == year]
-print(filtered_mapdf)
 
 info_map, map_milk, map_cows = st.columns(3)
 
@@ -354,6 +355,9 @@ with info_map:
 
     Laten we eens kijken naar enkele kleurrijke kaarten die ons inzicht verschaffen in de melkproductie en het aantal koeien in Europa:
     
+    **De Melkproductiekaart:** Deze kaart laat zien welke Europese landen de hoogste melkproductie hebben. De kleuren op de kaart geven aan waar de productie het meest geconcentreerd is. Je zult merken dat landen zoals Duitsland, Frankrijk, Nederland en Ierland prominent aanwezig zijn op deze kaart, met intense kleuren die hun sterke melkproductie weerspiegelen.
+    
+    **Koeiendichtheidkaart:** Deze kaart toont ons waar de meeste koeien in Europa worden gehouden. De kleuren op deze kaart geven ons een idee van de concentratie van koeien verschillende landen. Gebieden met een hoge koeiendichtheid, zoals delen van Nederland en delen van het noorden van Spanje, worden aangegeven door levendige kleuren.
     '''
 # CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
 # GG gefixed
