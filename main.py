@@ -394,25 +394,6 @@ st.plotly_chart(fig)
 # st.plotly_chart(fig)
 
 
-#scatterplot
-#slider toevoegen om aantal koe te selecteren?
-#nog een lineplot maken?
-milk_cow_country = filtered_data.groupby('country')[('cows','milk_production')].mean().reset_index()
-fig = px.scatter(milk_cow_country, x='cows', y = 'milk_production', color = 'country')
-
-# fig.add_trace(go.Scatter(x=milk_cow['cows'], y=milk_cow['milk_production'],
-#                          mode='lines+markers',
-#                          name='Gemiddele melk en koe per jaar'))
-
-fig.update_layout(
-    title_text='Aantal liter melk geproduceerd bij aantal koeien per land (2012-2022)',
-    xaxis_title_text='Aantal koeien',
-    yaxis_title_text='Aantal liter melk geproduceerd'
-)
-st.plotly_chart(fig)
-
-
-
 
 
 
