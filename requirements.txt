@@ -1,0 +1,8 @@
+numpy~=1.26.0
+pandas~=1.5.3
+streamlit~=1.27.2
+plotly~=5.17.0
+folium~=0.14.0
+streamlit_folium
+country_converter
+pillow~=9.4.0

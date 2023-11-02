@@ -3,7 +3,6 @@ import pandas as pd
 import streamlit as st
 import time
 import plotly.express as px
-import plotly.graph_objects as go
 import country_converter as coco
 from PIL import Image
 import folium
@@ -167,6 +166,7 @@ with info_col:
 with rank_col:
     grouped_df = filtered_data.groupby(by='country', as_index=False)['milk_per_cow'].mean()
     scoreboard = grouped_df.sort_values(by='milk_per_cow', ascending=False, ignore_index=True)
+    scoreboard = scoreboard.head(5)
     '''
     # Ranking the cows :cow2:
     '''
@@ -175,6 +175,7 @@ with rank_col:
         c = row['country']
         milk_per_cow = round(row['milk_per_cow'])
         st.write(f"### #{score} {c} - {milk_per_cow} liter")
+
 
 st.divider()
 
@@ -228,17 +229,17 @@ with fig_col1:
     st.markdown('### Productie van melk')
     fig_line = px.line(filtered_data, x='year', y='milk_production', color='country')
     fig_line.update_layout(
-        yaxis_title='Aantal liter (x1000)',
+        yaxis_title='Aantal liter',
         xaxis_title='Jaar'
     )
     st.plotly_chart(fig_line, theme='streamlit')
 
 
 with fig_col2:
-    st.markdown('### Aantal koeien (x1000)')
+    st.markdown('### Aantal koeien')
     fig_line = px.line(filtered_data, x='year', y='cows', color='country')
     fig_line.update_layout(
-        yaxis_title='Aantal koeien (x1000)',
+        yaxis_title='Aantal koeien',
         xaxis_title='Jaar'
     )
     st.plotly_chart(fig_line, theme='streamlit')
@@ -247,7 +248,7 @@ st.divider()
 col3, fig_col4, fig_col5 = st.columns(3)
 with col3:
     '''
-        ## Hoe productief is een koe?
+        ## Hoe productief is een koe? 	:chart_with_upwards_trend:
          De grafieken aan de rechterkant van deze visualisatie tonen de gemiddelde melkproductie per koe in verschillende
          Europese landen. Deze gegevens zijn verkregen door de totale hoeveelheid geproduceerde melk in elk land te delen door het aantal melkkoeien.
 
@@ -332,40 +333,37 @@ with fig_col7:
     fig7.update_layout(
         title='Boxplot voor aantal geproduceerd melk per jaar',
         xaxis_title_text='Jaar',
-        yaxis_title_text='Aantal liter melk geproduceren')
+        yaxis_title_text='Aantal liter melk geproduceerd')
     st.plotly_chart(fig7)
 st.divider()
 
 # year = pd.to_datetime('2022', format='%Y')
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
-mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
+mapdf = df.groupby(['milk_production', 'cows', 'milk_per_cow', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
 year = st.select_slider("Kies een jaar", options=mapdf['year'].dt.year.unique()[::-1], value=2022)
 year = pd.to_datetime(year, format='%Y')
 filtered_mapdf = mapdf[mapdf['year'] == year]
 
-info_map, map_milk, map_cows = st.columns(3)
-
+info_map, map_milk, map_cows, map_milk_per_cow = st.columns(4)
 with info_map:
     '''
-    # Op de kaart!
+    # Op de kaart! 	:world_map:
     
     Houdt jij ook zo van kleurrijke kaarten? Wij ook! In dit stukje gaan we het hebben over melkproductie in Europa en hoe kleurrijke kaarten ons inzicht kunnen geven in de productie van melk en het aantal koeien in verschillende regio's.
-
+    
     Europa is een van 's werelds belangrijkste regio's als het gaat om melkproductie. De Europese Unie, met zijn gevarieerde klimaat- en geografische omstandigheden, biedt de perfecte omgeving voor het houden van melkkoeien en de productie van zuivelproducten. Kaarten kunnen ons helpen begrijpen waar deze productie zich concentreert en welke gebieden de grootste bijdrage leveren aan de Europese melkindustrie.
-
+    
     Laten we eens kijken naar enkele kleurrijke kaarten die ons inzicht verschaffen in de melkproductie en het aantal koeien in Europa:
     
     **De Melkproductiekaart:** Deze kaart laat zien welke Europese landen de hoogste melkproductie hebben. De kleuren op de kaart geven aan waar de productie het meest geconcentreerd is. Je zult merken dat landen zoals Duitsland, Frankrijk, Nederland en Ierland prominent aanwezig zijn op deze kaart, met intense kleuren die hun sterke melkproductie weerspiegelen.
     
     **Koeiendichtheidkaart:** Deze kaart toont ons waar de meeste koeien in Europa worden gehouden. De kleuren op deze kaart geven ons een idee van de concentratie van koeien verschillende landen. Gebieden met een hoge koeiendichtheid, zoals delen van Nederland en delen van het noorden van Spanje, worden aangegeven door levendige kleuren.
     '''
-# CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
-# GG gefixed
 # Milk production
 with map_milk:
-    map1 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
+    map1 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron', width=500)
     folium.Choropleth(
         geo_data='countries.geojson',
         data=filtered_mapdf,
@@ -378,6 +376,9 @@ with map_milk:
     ).add_to(map1)
     st_data = st_folium(map1)
 
+
+# CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
+# GG gefixed
 # AANTAL KOE -- my god
 with map_cows:
     map = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
@@ -392,6 +393,22 @@ with map_cows:
         legend_name='Cows in Europe',
     ).add_to(map)
     st_data = st_folium(map)
+
+
+# melk per koe
+with map_milk_per_cow:
+    map2 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
+    folium.Choropleth(
+        geo_data='countries.geojson',
+        data=filtered_mapdf,
+        columns=['country_ISO3', 'milk_per_cow'],
+        key_on='properties.ISO_A3',
+        fill_color='YlGn',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name='Milk per cow in Europe',
+    ).add_to(map2)
+    st_data = st_folium(map2)
 
 
 
