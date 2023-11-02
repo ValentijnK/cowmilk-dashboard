@@ -340,7 +340,19 @@ mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().r
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
 filtered_mapdf = mapdf[mapdf['year'] == year]
 
-map_milk, map_cows = st.columns(2)
+info_map, map_milk, map_cows = st.columns(3)
+
+with info_map:
+    '''
+    # Op de kaart!
+    
+    Houdt jij ook zo van kleurrijke kaarten? Wij ook! In dit stukje gaan we het hebben over melkproductie in Europa en hoe kleurrijke kaarten ons inzicht kunnen geven in de productie van melk en het aantal koeien in verschillende regio's.
+
+    Europa is een van 's werelds belangrijkste regio's als het gaat om melkproductie. De Europese Unie, met zijn gevarieerde klimaat- en geografische omstandigheden, biedt de perfecte omgeving voor het houden van melkkoeien en de productie van zuivelproducten. Kaarten kunnen ons helpen begrijpen waar deze productie zich concentreert en welke gebieden de grootste bijdrage leveren aan de Europese melkindustrie.
+
+    Laten we eens kijken naar enkele kleurrijke kaarten die ons inzicht verschaffen in de melkproductie en het aantal koeien in Europa:
+    
+    '''
 # CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
 # Milk production
 # with map_milk:
