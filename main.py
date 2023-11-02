@@ -314,22 +314,23 @@ with info_col:
 
 
 with fig_col6:
-    # boxplot
-    fig = go.Figure()
-    fig.add_trace(go.Box(x=filtered_data['year'], y=filtered_year['cows'], name='Cows', boxmean=True))
-    fig.update_layout(
-        title='Boxplot voor aantal koeien per jaar')
-    st.plotly_chart(fig)
+    fig6 = px.box(filtered_data, x='country', y='cows',
+                 color='country')
+    fig6.update_layout(
+        title='Boxplot voor aantal koeien per jaar',
+        xaxis_title_text='Jaar',
+        yaxis_title_text='Aantal koeien'
+    )
+    st.plotly_chart(fig6)
 
 with fig_col7:
-    fig = go.Figure()
-    fig.add_trace(
-        go.Box(x=filtered_data['year'], y=filtered_year['milk_production'], name='Milk Production', boxmean=True))
-    fig.update_layout(
-        title='Boxplot voor aantal geproduceerd melk per jaar')
-
-    st.plotly_chart(fig)
-
+    fig7 = px.box(filtered_data, x='country', y='milk_production',
+                 color='country')
+    fig7.update_layout(
+        title='Boxplot voor aantal geproduceerd melk per jaar',
+        xaxis_title_text='Jaar',
+        yaxis_title_text='Aantal liter melk geproduceren')
+    st.plotly_chart(fig7)
 st.divider()
 
 
@@ -406,9 +407,6 @@ st.plotly_chart(fig)
 #     yaxis_title_text='Aantal liter melk geproduceerd'
 # )
 # st.plotly_chart(fig)
-
-
-
 
 
 
