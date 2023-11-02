@@ -360,6 +360,8 @@ with info_map:
     **De Melkproductiekaart:** Deze kaart laat zien welke Europese landen de hoogste melkproductie hebben. De kleuren op de kaart geven aan waar de productie het meest geconcentreerd is. Je zult merken dat landen zoals Duitsland, Frankrijk, Nederland en Ierland prominent aanwezig zijn op deze kaart, met intense kleuren die hun sterke melkproductie weerspiegelen.
     
     **Koeiendichtheidkaart:** Deze kaart toont ons waar de meeste koeien in Europa worden gehouden. De kleuren op deze kaart geven ons een idee van de concentratie van koeien verschillende landen. Gebieden met een hoge koeiendichtheid, zoals delen van Nederland en delen van het noorden van Spanje, worden aangegeven door levendige kleuren.
+    
+    **Mellproductie per koe:** De laatste kaart toont de melkproductie per koe per land. Hier kun je zien in welk land de meest productieve koeien grazen! 
     '''
 # Milk production
 with map_milk:
@@ -410,5 +412,24 @@ with map_milk_per_cow:
     ).add_to(map2)
     st_data = st_folium(map2)
 
+st.divider()
+
+prediction_fig, prediction_info = st.columns(2)
+
+with prediction_fig:
+    # CHONG PLAATS HIER CODE VOOR DE GRAFIEK!
+    '''
+    '''
+with prediction_info:
+    '''
+    # Hoe ziet de toekomst eruit? :crystal_ball:
+    
+    De toekomst van melkproductie in Europa is een onderwerp van groot belang, zowel vanuit economisch oogpunt als vanuit het perspectief van duurzaamheid en milieubescherming. De voorspelling van melkproductie is van essentieel belang voor boeren, beleidsmakers en de zuivelsector als geheel. Een veelgebruikte methode voor het voorspellen van melkproductie is het gebruik van lineaire regressiemodellen, die historische gegevens en trends analyseren om toekomstige productie te schatten.
+
+    In Europa speelt de melkproductie een cruciale rol in de agrarische sector. Het continent herbergt verschillende landen met grote zuivelsectoren en heeft een lange geschiedenis in de melkveehouderij. Echter, de toekomst van de melkproductie wordt beïnvloed door verschillende factoren, waaronder marktvraag, beleidsmaatregelen, technologische ontwikkelingen en milieukwesties.
+
+    Een lineair regressiemodel kan historische gegevens over melkproductie in Europa gebruiken om toekomstige trends te voorspellen. Het gebruik van gegevens en modellen kan boeren en beleidsmakers helpen bij het plannen van de toekomstige ontwikkelingen in de melkproductie, met aandacht voor zowel economische groei als milieubehoud.
+    
+    '''
 
 
