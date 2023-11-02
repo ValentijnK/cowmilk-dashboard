@@ -333,12 +333,13 @@ with fig_col7:
 st.divider()
 
 
-year = 2022
+year = pd.to_datetime('2022', format='%Y')
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
 mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
 filtered_mapdf = mapdf[mapdf['year'] == year]
+print(filtered_mapdf)
 
 info_map, map_milk, map_cows = st.columns(3)
 
@@ -354,38 +355,39 @@ with info_map:
     
     '''
 # CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
+# GG gefixed
 # Milk production
-# with map_milk:
-#     map1 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
-#     folium.Choropleth(
-#         geo_data='countries.geojson',
-#         data=filtered_mapdf,
-#         columns=['country_ISO3', 'milk_production'],
-#         key_on='properties.ISO_A3',
-#         fill_color='YlGn',
-#         fill_opacity=0.7,
-#         line_opacity=0.2,
-#         legend_name=f'Milk production in Europe in {year}',
-#     ).add_to(map1)
-#     st_data = st_folium(map1)
-#
-# # AANTAL KOE -- my god
-# with map_cows:
-#     map = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
-#     folium.Choropleth(
-#         geo_data='countries.geojson',
-#         data=filtered_mapdf,
-#         columns=['country_ISO3', 'cows'],
-#         key_on='properties.ISO_A3',
-#         fill_color='YlGn',
-#         fill_opacity=0.7,
-#         line_opacity=0.2,
-#         legend_name=f'Cows in {year}',
-#     ).add_to(map)
-#     st_data = st_folium(map)
+with map_milk:
+    map1 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
+    folium.Choropleth(
+        geo_data='countries.geojson',
+        data=filtered_mapdf,
+        columns=['country_ISO3', 'milk_production'],
+        key_on='properties.ISO_A3',
+        fill_color='YlGn',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name=f'Milk production in Europe in {year}',
+    ).add_to(map1)
+    st_data = st_folium(map1)
+
+# AANTAL KOE -- my god
+with map_cows:
+    map = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
+    folium.Choropleth(
+        geo_data='countries.geojson',
+        data=filtered_mapdf,
+        columns=['country_ISO3', 'cows'],
+        key_on='properties.ISO_A3',
+        fill_color='YlGn',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name=f'Cows in {year}',
+    ).add_to(map)
+    st_data = st_folium(map)
 
 # #vanaf hier de plot
-milk_cow = filtered_data.groupby('year')[('cows', 'milk_production')].mean().reset_index()
+milk_cow = filtered_data.groupby('year')[['cows', 'milk_production']].mean().reset_index()
 fig = go.Figure()
 fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['cows'], name='Aantal koe (x 1000)', opacity=0.75))
 fig.add_trace(go.Bar(x=milk_cow['year'], y=milk_cow['milk_production'], name='Aantal liter melk', opacity=0.75))
