@@ -116,8 +116,8 @@ if len(country) > 1 & len(country) < 2:
     avg_cows_c1 = round((country_1['cows'].mean() * 1000), 2)
     avg_cows_c2 = round((country_2['cows'].mean() * 1000), 2)
 
-    milk_per_cow_c1 = round((total_milk_c1 / avg_cows_c1) * 1000, 2)
-    milk_per_cow_c2 = round((total_milk_c2 / avg_cows_c2) * 1000, 2)
+    milk_per_cow_c1 = round(filtered_data[filtered_data['country'] == country[0]]['milk_per_cow'].mean(), 2)
+    milk_per_cow_c2 = round(filtered_data[filtered_data['country'] == country[1]]['milk_per_cow'].mean(), 2)
 
 elif len(country) == 1:
     # Get total liters of milk produced
