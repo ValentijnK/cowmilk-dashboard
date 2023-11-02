@@ -335,14 +335,14 @@ st.divider()
 # year = pd.to_datetime('2022', format='%Y')
 country = coco.convert(names=df['country'], to="ISO3")
 df['country_ISO3'] = country
-mapdf = df.groupby(['milk_production', 'cows', 'country_ISO3', 'year']).size().reset_index()
+mapdf = df.groupby(['milk_production', 'cows', 'milk_per_cow', 'country_ISO3', 'year']).size().reset_index()
 mapdf = mapdf[mapdf['country_ISO3'] != 'not found']  # remove not found (total EU values)
 year = st.select_slider("Kies een jaar", options=mapdf['year'].dt.year.unique()[::-1], value=2022)
 year = pd.to_datetime(year, format='%Y')
 filtered_mapdf = mapdf[mapdf['year'] == year]
 print(filtered_mapdf)
 
-map_milk, map_cows = st.columns(2)
+map_milk, map_cows, map_milk_per_cow = st.columns(3)
 # CHECK FF WAT HIER NOG MOET GEBEUREN. DIE MAP TANKT HEEL DIE SERVER LEEG
 # GG gefixed
 # Milk production
@@ -374,6 +374,22 @@ with map_cows:
         legend_name='Cows in Europe',
     ).add_to(map)
     st_data = st_folium(map)
+
+# melk per koe
+with map_milk_per_cow:
+    map2 = folium.Map(location=[48, 12], zoom_start=4, tiles='cartodbpositron')
+    folium.Choropleth(
+        geo_data='countries.geojson',
+        data=filtered_mapdf,
+        columns=['country_ISO3', 'milk_per_cow'],
+        key_on='properties.ISO_A3',
+        fill_color='YlGn',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name='Milk per cow in Europe',
+    ).add_to(map2)
+    st_data = st_folium(map2)
+
 
 # #vanaf hier de plot
 milk_cow = filtered_data.groupby('year')[['cows', 'milk_production']].mean().reset_index()
