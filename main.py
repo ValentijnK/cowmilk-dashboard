@@ -7,6 +7,7 @@ import country_converter as coco
 from PIL import Image
 import folium
 from streamlit_folium import st_folium
+import statsmodels.api as sm
 
 
 milk_production = pd.read_csv('production_milk_EU.csv')
@@ -417,9 +418,56 @@ st.divider()
 prediction_fig, prediction_info = st.columns(2)
 
 with prediction_fig:
-    # CHONG PLAATS HIER CODE VOOR DE GRAFIEK!
-    '''
-    '''
+    filtered_data = filtered_data.dropna(axis=0)
+    country_encoding = {
+        'AT': 1, 'BE': 2, 'BG': 3, 'CH': 4, 'CY': 5, 'CZ': 6, 'DE': 7, 'DK': 8, 'EE': 9, 'EL': 10,
+        'ES': 11, 'FI': 12, 'FR': 13, 'HR': 14, 'HU': 15, 'IE': 16, 'IT': 17, 'LT': 18, 'LU': 19, 'LV': 20,
+        'ME': 21, 'MK': 22, 'MT': 23, 'NL': 24, 'PL': 25, 'PT': 26, 'RO': 27, 'RS': 28, 'SE': 29, 'SI': 30,
+        'SK': 31, 'UK': 32, 'XK': 33
+    }
+    
+    # str naar int door encoding
+    filtered_data['country'] = filtered_data['country'].map(country_encoding)
+    #datetime naar int
+    filtered_data['year'] = filtered_data['year'].dt.year.astype('int32')
+    Y = filtered_data['milk_production']
+    X = filtered_data[['year', 'country','cows']]
+    
+    X = sm.add_constant(X)  
+    model = sm.OLS(Y, X).fit()
+    #predictions = model.predict(X) 
+    #filtered_data['predictions'] = predictions
+    #reverse_country_encoding = {v: k for k, v in country_encoding.items()}
+    #filtered_data['country'] = filtered_data['country'].map(reverse_country_encoding)
+    
+    # voorspel_df maken
+    years = list(range(2023, 2049))  # Jaren van 2023 tot 2048
+    countries = filtered_data['country'].unique()
+    
+    year_country_combinations = [(year, country) for year in years for country in countries]
+    
+    voorspel_df = pd.DataFrame(year_country_combinations, columns=['year', 'country'])
+    voorspel_df['cows'] = voorspel_df['country'].map(filtered_data.groupby('country')['cows'].mean())
+    voorspel_df['country'] = voorspel_df['country'].map(country_encoding)
+    
+    
+    # Voorspellingen 
+    voorspel_df = sm.add_constant(voorspel_df) 
+    predicted_values = model.predict(voorspel_df)
+    
+    voorspel_df['predicted_milk_production'] = predicted_values
+    
+    reverse_country_encoding = {v: k for k, v in country_encoding.items()}
+    
+    voorspel_df['country'] = voorspel_df['country'].map(reverse_country_encoding)
+    
+    fig = px.line(voorspel_df, markers = True,
+                  x="year", y='predicted_milk_production', 
+                  title='Aantal lter melk per jaar',
+                  color = 'country')
+    fig.update_xaxes(title_text='Jaar')
+    fig.update_yaxes(title_text='Aantal liter melk')
+    st.plotly_chart(fig)
 with prediction_info:
     '''
     # Hoe ziet de toekomst eruit? :crystal_ball:
