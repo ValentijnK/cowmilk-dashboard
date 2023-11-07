@@ -6,3 +6,4 @@ folium~=0.14.0
 streamlit_folium
 country_converter
 pillow~=9.4.0
+statsmodels
