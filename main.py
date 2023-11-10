@@ -271,7 +271,7 @@ with fig_col4:
     fig_line = px.line(filtered_data, x='year', y='milk_per_cow', color='country')
     fig_line.update_layout(
         title_text='Melk per koe',
-        yaxis_title='Productie per melkkoe',
+        yaxis_title='Melk productie per koe',
         xaxis_title='Jaar'
     )
     st.plotly_chart(fig_line, theme='streamlit')
@@ -322,8 +322,8 @@ with fig_col6:
     fig6 = px.box(filtered_data, x='country', y='cows',
                  color='country')
     fig6.update_layout(
-        title='Boxplot voor aantal koeien per jaar',
-        xaxis_title_text='Jaar',
+        title='Boxplot voor aantal koeien per land',
+        xaxis_title_text='Land',
         yaxis_title_text='Aantal koeien'
     )
     st.plotly_chart(fig6)
@@ -333,7 +333,7 @@ with fig_col7:
                  color='country')
     fig7.update_layout(
         title='Boxplot voor aantal geproduceerd melk per jaar',
-        xaxis_title_text='Jaar',
+        xaxis_title_text='Land',
         yaxis_title_text='Aantal liter melk geproduceerd')
     st.plotly_chart(fig7)
 st.divider()
